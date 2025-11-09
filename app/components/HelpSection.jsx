@@ -189,13 +189,18 @@ export default function HelpSection() {
 
 
       {/* Decorative Elements */}
-      <motion.div
-  className="absolute -left-20 top-1/2 opacity-20"
-  animate={{ opacity: [0.2, 0.1, 0.2], scale: [1, 0.98, 1] }}
-  transition={{ duration: 4, repeat: Infinity }}
->
-  <img src="/assets/glass1.svg" width={200} height={400} alt="Стакан" />
-</motion.div>
+      <motion.div 
+        className="absolute -left-20 top-1/2 opacity-20"
+        animate={{ opacity: [0.2, 0.1, 0.2], scale: [1, 0.98, 1] }}
+        transition={{ duration: 4, repeat: Infinity }}
+      >
+        <Image
+          src="/assets/glass1.svg"
+          width={200}
+          height={400}
+          alt=""
+        />
+      </motion.div>
 
     </section>
 
