@@ -35,21 +35,23 @@ export default function Header() {
             ))}
           </ul>
 
-          {/* Мобильный бургер — теперь просто точка */}
-          <div className="md:hidden absolute left-4 top-4">
-            <button
-              onClick={() => setIsOpen(!isOpen)}
-              className="text-white text-3xl focus:outline-none"
-            >
-              <span
-                className={`transition-colors duration-300 ${
-                  isOpen ? "text-accent" : "text-white"
-                }`}
-              >
-                ●
-              </span>
-            </button>
-          </div>
+          {/* Мобильный бургер — теперь точка */}
+<div className="md:hidden fixed top-4 left-4 z-50">
+  <button
+    onClick={() => setIsOpen(!isOpen)}
+    className="text-white text-3xl focus:outline-none"
+    aria-label="Открыть/закрыть меню"
+  >
+    <span
+      className={`transition-colors duration-300 ${
+        isOpen ? "text-accent" : "text-white"
+      }`}
+    >
+      ●
+    </span>
+  </button>
+</div>
+
 
           {/* Выпадающее меню */}
           {isOpen && (
