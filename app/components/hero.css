@@ -58,7 +58,7 @@
 
 .tv-wrapper {
   position: relative;
-  width: 50vw;
+  width: 40vw;
   max-width: 800px;
   aspect-ratio: 16/10;
   display: flex;
@@ -84,16 +84,16 @@
 .tv-container {
   position: absolute;
   top: 10%;
-  left: 13.5%;
-  width: 73%;
+  left: 5%; /* раньше 13% */
+  width: 72%; /* можно чуть уменьшить ширину */
   height: 80%;
-  z-index: 1; /* ✅ НИЖЕ рамки телевизора */
-  overflow: hidden; /* ✅ КРИТИЧНО: обрезает края */
-  border-radius: 0.8rem; /* ✅ Уменьшил радиус */
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 0.8rem;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: #000; /* ✅ Чёрный фон на случай артефактов */
+  background: #000;
 }
 
 /* Видео */
@@ -124,35 +124,37 @@
   border-radius: 0.8rem;
 }
 
-.mute-button {
+
+.mute-button-outside {
   position: absolute;
-  bottom: 1rem;
-  right: 1rem;
-  background: rgba(0, 0, 0, 0.6);
+  top: 60%;       
+  right: 13%;     
+  background: rgba(0, 0, 0, 0.5); 
+  color: white;
   border: none;
   border-radius: 50%;
-  padding: 10px 14px;
-  font-size: 1.35rem;
-  color: #fff;
+  
+  /* Адаптивный размер */
+  padding: clamp(0.5rem, 1.5vw, 1rem); /* минимально 0.5rem, максимально 1rem */
+  font-size: clamp(1rem, 2.5vw, 1.5rem); /* минимально 1rem, максимально 1.5rem */
+  
   cursor: pointer;
-  z-index: 100; /* ✅ Кнопка поверх всего */
-  transition: all 0.2s ease;
-  pointer-events: auto; /* ✅ Разрешаем клики только на кнопке */
+  z-index: 50;
+  pointer-events: auto;
+  transition: background 0.3s ease;
 }
 
-.mute-button:hover {
-  background: rgba(0, 0, 0, 0.8);
-  transform: scale(1.05);
+.mute-button-outside:hover {
+  background: #a50a0a; 
 }
 
-.mute-button:active {
-  background: rgba(0, 0, 0, 0.85);
-  transform: scale(0.95);
+.mute-button-outside:active {
+  background: #8a0404; 
 }
+
 
 /* ===== Фото ===== */
 
-/* Контейнер фото без рамок и скруглений */
 .photo-container {
   position: absolute;
   inset: 0; /* Occupy full space of tv-wrapper */
