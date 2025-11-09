@@ -1,0 +1,153 @@
+.help-section {
+  position: relative;
+  overflow: hidden;
+
+  /* 🌫 Фон с дымкой */
+  background-image: url("/assets/decorative-background-with-smoke.jpg");
+  background-size: cover;         /* растягиваем на весь блок */
+  background-position: center;    /* центрирование */
+  background-repeat: no-repeat;
+  background-attachment: fixed;   /* скролл фона */
+}
+
+/* Прозрачность блоков, чтобы фон просвечивал */
+.bg-dark-glass {
+  background-color: rgba(0,0,0,0.3); /* можно регулировать затемнение */
+}
+.bg-dark-glass-strong {
+  background-color: rgba(0,0,0,0.5);
+}
+
+.help-title {
+  font-size: clamp(1.8rem, 3vw, 3.5rem);
+  text-align: center;
+  line-height: 1.3;
+}
+
+.help-text {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  text-align: center;
+  color: #ccc;
+}
+
+.help-grid {
+  display: grid;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  justify-content: center;
+  align-items: stretch;
+}
+
+.help-card {
+  position: relative;
+  background: rgba(20, 20, 20, 0.6);
+  padding: clamp(0.8rem, 2vw, 1.5rem);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.help-card p {
+  font-size: clamp(0.9rem, 2.5vw, 1.25rem);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.help-card svg {
+  width: 100%;
+  height: auto;
+  max-height: clamp(120px, 20vw, 200px);
+  transition: all 0.3s ease;
+}
+
+/* === Анимация при наведении === */
+.help-card:hover svg {
+  color: var(--accent, #e63946);
+  opacity: 1;
+  transform: scale(1.02);
+}
+
+/* 💻 Large screens (1440px+) */
+@media (min-width: 1440px) {
+  .help-title {
+    font-size: clamp(2.5rem, 2.5vw, 3.5rem);
+  }
+  .help-text {
+    font-size: clamp(1.2rem, 1.5vw, 1.5rem);
+  }
+}
+
+/* 📉 ≤1200px */
+@media (max-width: 1200px) {
+  .help-title {
+    font-size: clamp(2.2rem, 3vw, 3rem);
+  }
+  .help-card {
+    padding: clamp(0.8rem, 1.8vw, 1.2rem);
+  }
+}
+
+/* 🧱 ≤992px (планшеты) */
+@media (max-width: 992px) {
+  .help-title {
+    font-size: clamp(2rem, 4vw, 2.6rem);
+  }
+  .help-text {
+    font-size: clamp(0.95rem, 3vw, 1.2rem);
+  }
+  .help-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 📱 ≤768px (смартфоны) */
+@media (max-width: 768px) {
+  .help-title {
+    font-size: clamp(1.8rem, 5vw, 2.2rem);
+  }
+  .help-card {
+    padding: clamp(0.6rem, 2vw, 1rem);
+  }
+  .help-card p {
+    font-size: clamp(0.85rem, 3.5vw, 1.1rem);
+  }
+  .help-card svg {
+    max-height: clamp(100px, 25vw, 160px);
+  }
+}
+
+/* 📲 ≤576px (малые экраны) */
+@media (max-width: 576px) {
+  .help-title {
+    font-size: clamp(1.6rem, 5vw, 2rem);
+  }
+  .help-card {
+    padding: clamp(0.5rem, 2.5vw, 0.8rem);
+  }
+  .help-card p {
+    font-size: clamp(0.8rem, 3vw, 1rem);
+  }
+}
+
+/* 🪶 ≤400px */
+@media (max-width: 400px) {
+  .help-title {
+    font-size: clamp(1.3rem, 4.5vw, 1.7rem);
+  }
+  .help-card p {
+    font-size: clamp(0.75rem, 2.8vw, 0.9rem);
+  }
+  .help-card svg {
+    max-height: clamp(80px, 30vw, 120px);
+  }
+}
+
+/* 🧩 ≤300px — ультра-компакт */
+@media (max-width: 300px) {
+  .help-title {
+    font-size: clamp(1.1rem, 4vw, 1.4rem);
+  }
+  .help-card p {
+    font-size: clamp(0.7rem, 2vw, 0.85rem);
+  }
+}
