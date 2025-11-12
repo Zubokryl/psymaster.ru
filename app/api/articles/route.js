@@ -1,20 +1,30 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "../../lib/supabaseClient";
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
 
 // Получить все статьи
-export async function GET() {
-  const { data, error } = await supabase
-    .from("articles")
-    .select("*")
-    .order("created_at", { ascending: false });
+export async function GET(req) {
+  const url = new URL(req.url);
+  const id = url.searchParams.get("id");
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json(data);
+  if (id) {
+    // вернуть конкретную статью
+    const { data, error } = await supabase
+      .from("articles")
+      .select("*")
+      .eq("id", id)
+      .single(); // возвращает один объект
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(data);
+  } else {
+    // вернуть все статьи
+    const { data, error } = await supabase
+      .from("articles")
+      .select("*")
+      .order("created_at", { ascending: false });
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json(data);
+  }
 }
 
 // Добавить новую статью
@@ -36,9 +46,14 @@ export async function PUT(req) {
 
 // Удалить статью
 export async function DELETE(req) {
-  const { id } = await req.json();
+  const url = new URL(req.url);
+  const id = url.searchParams.get("id");
+
+  if (!id) return NextResponse.json({ error: "id не указан" }, { status: 400 });
+
   const { error } = await supabase.from("articles").delete().eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+
   return NextResponse.json({ success: true });
 }
 

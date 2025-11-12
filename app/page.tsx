@@ -4,8 +4,8 @@ import HelpSection from "./components/HelpSection";
 
 
 export const metadata = {
-  title: "Денис — помощь при алкогольной зависимости",
-  description: "Психолог Денис. Помощь при алкогольной зависимости. Консультации онлайн и очно.",
+  title: "Помощь при алкогольной зависимости",
+  description: "Помощь при алкогольной зависимости. Консультации онлайн и очно. Психолог Денис Горбунов.",
 };
 
 export default function HomePage() {

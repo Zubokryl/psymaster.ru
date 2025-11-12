@@ -1,110 +1,132 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
-import ReactMarkdown from "react-markdown";
-import rehypeHighlight from "rehype-highlight";
-import "react-quill/dist/quill.snow.css";
 import dynamic from "next/dynamic";
+import "react-quill/dist/quill.snow.css";
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
-export default function AdminArticles() {
+export default function AdminArticleEditor() {
   const router = useRouter();
-  const [articles, setArticles] = useState([]);
+  const searchParams = useSearchParams();
+  const articleId = searchParams ? searchParams.get("id") : null;
+
   const [form, setForm] = useState({
     title: "",
     content: "",
     media_url: "",
     media_type: "image",
   });
-  const [editingId, setEditingId] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
 
+  // Проверка админа
   useEffect(() => {
-    const loggedIn = localStorage.getItem("adminLoggedIn");
-    if (!loggedIn) router.push("/admin/login");
-  }, []);
-
-  useEffect(() => {
-    fetchArticles();
-  }, []);
-
-  const fetchArticles = async () => {
-    try {
-      const res = await fetch("/api/articles");
-      const data = await res.json();
-      setArticles(data);
-    } catch (err) {
-      console.error("Ошибка загрузки:", err);
+    const loggedIn = localStorage.getItem("adminLoggedIn") === "true";
+    if (!loggedIn) {
+      router.push("/admin/login");
     }
+  }, [router]);
+
+  // При наличии id — подгружаем статью
+  useEffect(() => {
+    if (articleId) fetchArticle(articleId);
+  }, [articleId]);
+
+  async function fetchArticle(id) {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/articles?id=${id}`);
+      const data = await res.json();
+      if (data && !data.error) {
+        // подстраховка: некоторые поля могут быть undefined
+        setForm({
+          title: data.title ?? "",
+          content: data.content ?? "",
+          media_url: data.media_url ?? "",
+          media_type: data.media_type ?? "image",
+        });
+      } else {
+        console.error("Ошибка загрузки статьи:", data?.error || "no-data");
+        alert("Не удалось загрузить статью.");
+      }
+    } catch (err) {
+      console.error("Ошибка загрузки статьи:", err);
+      alert("Ошибка при загрузке статьи.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setForm((prev) => ({
+        ...prev,
+        media_url: reader.result,
+        media_type: file.type.startsWith("video") ? "video" : "image",
+      }));
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.title || !form.content) return alert("Заполни заголовок и контент!");
 
-    const method = editingId ? "PUT" : "POST";
-    const body = editingId ? { id: editingId, ...form } : form;
-
-    const res = await fetch("/api/articles", {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-
-    const result = await res.json();
-    if (result.error) alert(result.error);
-    else {
-      alert(editingId ? "Статья обновлена!" : "Статья добавлена!");
-      setForm({ title: "", content: "", media_url: "", media_type: "image" });
-      setEditingId(null);
-      fetchArticles();
+    // защита: только админ может отправлять
+    if (localStorage.getItem("adminLoggedIn") !== "true") {
+      alert("Доступ только для админа.");
+      router.push("/admin/login");
+      return;
     }
-  };
 
-  const handleDelete = async (id) => {
-    if (!confirm("Удалить статью?")) return;
-    const res = await fetch("/api/articles", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id }),
-    });
-    const result = await res.json();
-    if (result.error) alert(result.error);
-    else fetchArticles();
-  };
+    if (!form.title || !form.content) {
+      alert("Пожалуйста, заполните заголовок и контент.");
+      return;
+    }
 
-  const handleEdit = (article) => {
-    setForm(article);
-    setEditingId(article.id);
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  };
+    setSaving(true);
+    try {
+      const method = articleId ? "PUT" : "POST";
+      // если есть articleId — приводим к числу, если нужно
+      const body = articleId ? { id: articleId, ...form } : form;
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setForm({
-        ...form,
-        media_url: reader.result,
-        media_type: file.type.startsWith("video") ? "video" : "image",
+      const res = await fetch("/api/articles", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
       });
-    };
-    reader.readAsDataURL(file);
+
+      const result = await res.json();
+      if (result?.error) {
+        console.error("API error:", result.error);
+        alert("Ошибка от API: " + result.error);
+      } else {
+        alert(articleId ? "Статья обновлена!" : "Статья добавлена!");
+        // после сохранения — редирект на страницу со списком статей (или на /admin)
+        router.push("/articles"); // показываем пользователям список статей
+      }
+    } catch (err) {
+      console.error("Ошибка сохранения:", err);
+      alert("Ошибка при сохранении статьи.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
     <div className="min-h-screen pt-28 pb-20 px-6 bg-[url('/assets/decorative-background-with-smoke.jpg')] bg-cover bg-fixed bg-center text-white font-sans">
       <div className="max-w-4xl mx-auto bg-black/60 border border-white/10 rounded-2xl p-8 backdrop-blur-md shadow-xl shadow-black/40">
         <h1 className="text-4xl mb-8 font-bold text-center drop-shadow-lg flex items-center justify-center gap-2">
-          <Image src="/assets/headers.png" alt="Header" width={36} height={36} />
-          Админ-панель: статьи
+          {articleId ? "Редактирование статьи" : "Новая статья"}
         </h1>
 
-        {/* Форма */}
         <form onSubmit={handleSubmit} className="space-y-4 mb-10">
+          {/* Заголовок */}
           <input
             type="text"
             placeholder="Заголовок статьи"
@@ -113,119 +135,80 @@ export default function AdminArticles() {
             className="w-full p-3 rounded-lg bg-gray-900/70 text-white placeholder-gray-400 border border-gray-700 focus:border-accent focus:ring-2 focus:ring-accent/60 outline-none transition"
           />
 
-          <ReactQuill
-            theme="snow"
-            value={form.content}
-            onChange={(value) => setForm({ ...form, content: value })}
-            modules={{
-              toolbar: [
-                [{ header: [1, 2, 3, false] }],
-                ["bold", "italic", "underline", "strike"],
-                [{ color: [] }, { background: [] }],
-                [{ list: "ordered" }, { list: "bullet" }],
-                ["link", "image", "video"],
-                ["clean"],
-              ],
-            }}
-            className="bg-gray-900/70 text-white rounded-lg"
-          />
-
-          <div className="flex flex-col md:flex-row gap-4">
-            <input
-              type="text"
-              placeholder="URL картинки или видео"
-              value={form.media_url}
-              onChange={(e) => setForm({ ...form, media_url: e.target.value })}
-              className="flex-1 p-3 rounded-lg bg-gray-900/70 text-white placeholder-gray-400 border border-gray-700 focus:border-accent focus:ring-2 focus:ring-accent/60 outline-none transition"
+          {/* Контент — ReactQuill */}
+          <div className="bg-gray-900/70 rounded-lg overflow-hidden">
+            <ReactQuill
+              theme="snow"
+              value={form.content}
+              onChange={(value) => setForm({ ...form, content: value })}
+              modules={{
+                toolbar: [
+                  [{ header: [1, 2, 3, false] }],
+                  ["bold", "italic", "underline", "strike"],
+                  [{ color: [] }, { background: [] }],
+                  [{ list: "ordered" }, { list: "bullet" }],
+                  ["link", "image", "video"],
+                  ["clean"],
+                ],
+              }}
+              className="min-h-[200px] text-white"
             />
-
-            <input
-              type="file"
-              accept="image/*,video/*"
-              onChange={handleFileUpload}
-              className="flex-1 p-3 rounded-lg bg-gray-900/70 text-white border border-gray-700 cursor-pointer transition"
-            />
-
-            <select
-              value={form.media_type}
-              onChange={(e) => setForm({ ...form, media_type: e.target.value })}
-              className="p-3 rounded-lg bg-gray-900/70 border border-gray-700 text-white"
-            >
-              <option value="image">Изображение</option>
-              <option value="video">Видео</option>
-            </select>
           </div>
 
+          {/* Медиа: URL и файл (file -> data URL) */}
+<div className="flex flex-col md:flex-row gap-4 items-start">
+  <input
+    type="text"
+    placeholder="URL картинки или видео"
+    value={form.media_url}
+    onChange={(e) => setForm({ ...form, media_url: e.target.value })}
+    className="flex-1 p-3 rounded-lg bg-gray-900/70 text-white placeholder-gray-400 border border-gray-700 focus:border-accent focus:ring-2 focus:ring-accent/60 outline-none transition"
+  />
+
+  <input
+    type="file"
+    accept="image/*,video/*"
+    onChange={handleFileUpload}
+    className="flex-1 p-3 rounded-lg bg-gray-900/70 text-white border border-gray-700 cursor-pointer transition"
+  />
+
+  <select
+    value={form.media_type}
+    onChange={(e) => setForm({ ...form, media_type: e.target.value })}
+    className="p-3 rounded-lg bg-gray-900/70 border border-gray-700 text-white"
+  >
+    <option value="image">Изображение</option>
+    <option value="video">Видео</option>
+  </select>
+
+  {/* Кнопка удалить медиа */}
+  {form.media_url && (
+    <button
+      type="button"
+      onClick={() => setForm({ ...form, media_url: "", media_type: "image" })}
+      className="mt-2 md:mt-0 px-4 py-2 bg-red-600 rounded-lg hover:bg-red-500 transition text-white"
+    >
+      Удалить фото/видео
+    </button>
+  )}
+</div>
+
+
+          {/* Кнопка Сохранить */}
           <button
             type="submit"
-            className="w-full mt-2 py-3 text-lg rounded-lg font-semibold bg-gradient-to-r from-[#ab1313] to-[#750404] shadow-lg shadow-black/30 hover:scale-[1.02] transition"
+            disabled={saving || loading}
+            className="w-full mt-2 py-3 text-lg rounded-lg font-semibold bg-gradient-to-r from-[#ab1313] to-[#750404] shadow-lg shadow-black/30 hover:scale-[1.02] transition flex justify-center items-center gap-2 disabled:opacity-60"
           >
             <Image
-              src={editingId ? "/assets/save.png" : "/assets/add.png"}
+              src={articleId ? "/assets/save.png" : "/assets/add.png"}
               alt="icon"
               width={24}
               height={24}
             />
-            {editingId ? "Сохранить" : "Добавить"}
+            {saving ? "Сохраняем..." : articleId ? "Сохранить изменения" : "Добавить статью"}
           </button>
         </form>
-
-        {/* Список статей */}
-        <h2 className="text-3xl mb-6 text-center font-semibold flex items-center justify-center gap-2">
-          <Image src="/assets/headers.png" alt="Articles" width={50} height={50} />
-          Опубликованные статьи
-        </h2>
-
-        <div className="space-y-6">
-          {articles.map((a) => (
-            <div
-              key={a.id}
-              className="bg-gray-900/70 border border-gray-800 p-6 rounded-xl shadow-lg shadow-black/40"
-            >
-              <h3 className="text-2xl font-semibold text-white mb-2">{a.title}</h3>
-
-              {a.content && (
-                <ReactMarkdown rehypePlugins={[rehypeHighlight]}>
-                  {a.content}
-                </ReactMarkdown>
-              )}
-
-              {a.media_url &&
-                (a.media_type === "image" ? (
-                  <img
-                    src={a.media_url}
-                    alt={a.title}
-                    className="mt-2 rounded-lg w-3/4 border border-gray-700"
-                  />
-                ) : (
-                  <video
-                    src={a.media_url}
-                    controls
-                    className="mt-2 rounded-lg w-3/4 border border-gray-700"
-                  />
-                ))}
-
-              <div className="flex space-x-3 mt-4">
-                <button
-                  onClick={() => handleEdit(a)}
-                  className="bg-blue-700/80 px-4 py-2 rounded-lg hover:bg-blue-600"
-                >
-                  Редактировать
-                </button>
-                <button
-                  onClick={() => handleDelete(a.id)}
-                  className="bg-red-700/80 px-4 py-2 rounded-lg hover:bg-red-600"
-                >
-                  Удалить
-                </button>
-              </div>
-            </div>
-          ))}
-
-          {articles.length === 0 && (
-            <p className="text-center text-gray-400 italic">Пока нет статей...</p>
-          )}
-        </div>
       </div>
     </div>
   );

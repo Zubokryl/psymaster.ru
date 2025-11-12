@@ -5,10 +5,24 @@
 
 /* свои кастомные переменные и цвета */
 :root {
-  --color-accent: #8a0404;
+  --color-accent: #500101;
 }
 .bg-dark-glass {
   background-color: rgba(11,11,11,0.7);
+}
+
+.prose u {
+  text-decoration: underline;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+}
+
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
 }
 
 @font-face {
@@ -32,5 +46,25 @@
 }
 
 
+@font-face {
+  font-family: 'Roboto Slab';
+  src: url('/fonts/roboto-slab/RobotoSlab-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Roboto Slab';
+  src: url('/fonts/roboto-slab/RobotoSlab-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Tailwind класс */
+.font-roboto-slab {
+  font-family: 'Roboto Slab', serif;
+}
 
 
