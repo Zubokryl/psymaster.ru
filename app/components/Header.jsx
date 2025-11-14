@@ -26,6 +26,7 @@ export default function Header() {
   const links = [
     { name: "Главная", href: "/" },
     { name: "Мои статьи", href: "/articles" },
+    { name: "Чат поддержки", href: "/chat" },
     { name: "Отзывы", href: "/reviews" },
     { name: "Чат", href: "/chat" },
   ];

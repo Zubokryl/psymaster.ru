@@ -330,3 +330,4 @@ const isAdmin = user?.user_metadata?.role === "admin";
   </section>
 );
 }
+
