@@ -1,48 +1,67 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { supabase } from "../lib/supabaseClient"; // путь к клиенту
+import { supabase } from "../lib/supabaseClient";
 import { useRouter } from "next/navigation";
 
 export default function ChatPage() {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const messagesEndRef = useRef(null);
   const router = useRouter();
 
   useEffect(() => {
-    // Получаем текущего пользователя через Supabase auth
     const getUser = async () => {
-      const { data } = await supabase.auth.getUser();
-      setUser(data.user);
+      try {
+        setLoading(true);
+        const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
 
-      if (!data.user) router.push("/login?redirectedFrom=chat");
+        if (!user) {
+          router.push("/login?redirectedFrom=chat");
+          return;
+        }
+
+        // Load messages
+        const { data: messages, error } = await supabase
+          .from('messages')
+          .select('*')
+          .order('created_at', { ascending: true });
+
+        if (error) throw error;
+        setMessages(messages || []);
+
+      } catch (error) {
+        console.error("Error loading chat:", error);
+      } finally {
+        setLoading(false);
+      }
     };
+
     getUser();
 
-    // Подписка на новые сообщения
+    // Set up real-time subscription
     const channel = supabase
-      .channel("public:messages")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "messages" },
-        (payload) => setMessages((prev) => [...prev, payload.new])
-      )
+      .channel('messages')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'messages'
+      }, (payload) => {
+        setMessages(prev => [...prev, payload.new]);
+      })
       .subscribe();
 
-    // Загружаем существующие сообщения
-    const loadMessages = async () => {
-      const { data } = await supabase
-        .from("messages")
-        .select("*")
-        .order("created_at", { ascending: true });
-      if (data) setMessages(data);
+    return () => {
+      supabase.removeChannel(channel);
     };
-    loadMessages();
-
-    return () => supabase.removeChannel(channel);
   }, [router]);
+
+  if (loading) {
+    return <div className="flex items-center justify-center h-screen">Loading chat...</div>;
+  }
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
