@@ -16,19 +16,14 @@ export default function Header() {
   // ---------- РЕАКТИВНАЯ АВТОРИЗАЦИЯ ----------
   useEffect(() => {
     const loadUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
+      const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
       setLoading(false);
     };
 
     loadUser();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
     });
@@ -38,7 +33,7 @@ export default function Header() {
 
   const isAdmin = user?.user_metadata?.role === "admin";
 
-  // ---------- Выход ----------
+  // ---------- ВЫХОД ----------
   const logout = async () => {
     await supabase.auth.signOut();
     router.push("/");
@@ -56,7 +51,7 @@ export default function Header() {
   if (isAdmin) links.push({ name: "Создать статью", href: "/admin/articles" });
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-transparent backdrop-blur-md z-50 transition-all duration-300">
+    <header className="fixed top-0 left-0 w-full bg-transparent md:backdrop-blur-md z-50 transition-all duration-300">
       <div className="container mx-auto flex items-center p-4 relative">
 
         {/* Бургер */}
@@ -67,18 +62,19 @@ export default function Header() {
         </div>
 
         {/* Десктоп меню */}
-        <ul className="hidden md:flex mx-auto space-x-8 text-white font-medium">
-          {links.map((link) => (
-            <li key={link.name}>
-              <Link
-                href={link.href}
-                className={`${pathname === link.href ? "text-accent" : "hover:text-accent"}`}
-              >
-                {link.name}
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <ul className="hidden md:flex mx-auto space-x-8 text-white font-medium pr-32">
+  {links.map((link) => (
+    <li key={link.name}>
+      <Link
+        href={link.href}
+        className={`${pathname === link.href ? "text-accent" : "hover:text-accent"}`}
+      >
+        {link.name}
+      </Link>
+    </li>
+  ))}
+</ul>
+
 
         {/* Правая кнопка */}
         {isAdmin ? (
@@ -91,51 +87,53 @@ export default function Header() {
         ) : (
           <Link
             href="/admin/login"
-            className="hidden md:inline-block bg-[#1e2a5c] px-4 py-2 rounded hover:bg-[#16204a] text-white font-medium absolute right-4"
+            className="hidden md:inline-block bg-[#1b234d] px-4 py-2 rounded hover:bg-[#161a3a] text-white font-medium transition absolute right-4"
           >
             Войти (админ)
           </Link>
         )}
 
         {/* Мобильное меню */}
-        {isOpen && (
-          <div className="md:hidden absolute top-16 left-4 z-40">
-            <div className="bg-black/50 backdrop-blur-md rounded-lg p-3 shadow-lg min-w-[150px] max-w-xs">
-              <ul className="flex flex-col space-y-2 text-white">
-                {links.map((link) => (
-                  <li key={link.name}>
-                    <Link
-                      href={link.href}
-                      className={`${pathname === link.href ? "text-accent" : "hover:text-accent"}`}
-                      onClick={() => setIsOpen(false)}
-                    >
-                      {link.name}
-                    </Link>
-                  </li>
-                ))}
+{isOpen && (
+  <div className="md:hidden fixed inset-0 z-40 flex justify-start items-start bg-[#111111] p-4">
+    <div className="rounded-lg shadow-lg w-full max-w-xs">
+      <ul className="flex flex-col space-y-2 text-white p-4 text-sm">
+        {links.map((link) => (
+          <li key={link.name}>
+            <Link
+              href={link.href}
+              className={`${pathname === link.href ? "text-accent" : "hover:text-accent"}`}
+              onClick={() => setIsOpen(false)}
+            >
+              {link.name}
+            </Link>
+          </li>
+        ))}
 
-                <li>
-                  {isAdmin ? (
-                    <button
-                      onClick={logout}
-                      className="w-full text-left py-2 px-3 bg-red-700/80 rounded hover:bg-red-600 transition"
-                    >
-                      Выйти (админ)
-                    </button>
-                  ) : (
-                    <Link
-                      href="/admin/login"
-                      className="w-full block py-2 px-3 bg-[#1e2a5c] rounded hover:bg-[#16204a] text-white font-medium"
-                      onClick={() => setIsOpen(false)}
-                    >
-                      Войти (админ)
-                    </Link>
-                  )}
-                </li>
-              </ul>
-            </div>
-          </div>
-        )}
+        <li>
+          {isAdmin ? (
+            <button
+              onClick={logout}
+              className="w-full text-left py-2 px-3 bg-red-700 rounded hover:bg-red-600 transition mt-2 text-sm"
+            >
+              Выйти (админ)
+            </button>
+          ) : (
+            <Link
+              href="/admin/login"
+              className="w-full block py-2 px-3 bg-[#1b234d] rounded hover:bg-[#161a3a] text-white font-medium mt-2 text-sm"
+              onClick={() => setIsOpen(false)}
+            >
+              Войти (админ)
+            </Link>
+          )}
+        </li>
+      </ul>
+    </div>
+  </div>
+)}
+
+
       </div>
     </header>
   );

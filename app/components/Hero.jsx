@@ -25,14 +25,7 @@ export default function Hero() {
     }
   };
 
-  useEffect(() => {
-    const onFirstClick = () => {
-      handleUserGesture();
-      document.removeEventListener("pointerdown", onFirstClick);
-    };
-    document.addEventListener("pointerdown", onFirstClick);
-    return () => document.removeEventListener("pointerdown", onFirstClick);
-  }, []);
+  
 
   // Кнопка для переключения mute/unmute после первого клика
    const toggleMute = () => {

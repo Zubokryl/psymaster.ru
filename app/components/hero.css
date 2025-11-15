@@ -45,8 +45,7 @@
   color: white;
   overflow: hidden;
 
-   /* 👇 Добавляем фон */
-  background-image: url("/assets/decorative-background-with-smoke.jpg");
+    background-image: url("/assets/decorative-background-with-smoke.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -64,28 +63,27 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden; /* ✅ Скрывает всё за пределами */
-  isolation: isolate; /* ✅ Создаёт новый контекст наложения */
+  overflow: hidden; 
+  isolation: isolate; 
 }
 
 /* Телевизор - рамка поверх всего */
 .tv-screen {
-  position: absolute; /* ✅ ИЗМЕНЕНО с relative на absolute */
-  inset: 0; /* ✅ Занимает весь tv-wrapper */
+  position: absolute; 
+  inset: 0; 
   background-image: url("/assets/TV.png");
   background-size: contain;
   background-position: center center;
   background-repeat: no-repeat;
-  z-index: 20; /* ✅ МАКСИМАЛЬНЫЙ приоритет для рамки */
+  z-index: 20; 
   pointer-events: none;
 }
 
-/* Контейнер видео привязываем к экрану телевизора */
 .tv-container {
   position: absolute;
   top: 10%;
-  left: 5%; /* раньше 13% */
-  width: 72%; /* можно чуть уменьшить ширину */
+  left: 5%; 
+  width: 72%;
   height: 80%;
   z-index: 1;
   overflow: hidden;
@@ -112,7 +110,6 @@
   opacity: 1;
 }
 
-/* Canvas */
 #canvas {
   position: absolute;
   top: 0;
@@ -120,7 +117,7 @@
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 5; /* ✅ Над видео, но под кнопкой */
+  z-index: 5; 
   border-radius: 0.8rem;
 }
 
@@ -128,21 +125,25 @@
 .mute-button-outside {
   position: absolute;
   top: 60%;       
-  right: 13%;     
+  right: 15%;     
   background: rgba(0, 0, 0, 0.5); 
   color: white;
   border: none;
   border-radius: 50%;
-  
-  /* Адаптивный размер */
-  padding: clamp(0.5rem, 1.5vw, 1rem); /* минимально 0.5rem, максимально 1rem */
-  font-size: clamp(1rem, 2.5vw, 1.5rem); /* минимально 1rem, максимально 1.5rem */
-  
+
+  width: clamp(2.3rem, 6vw, 3.3rem);
+  height: clamp(2.3rem, 6vw, 3.3rem);
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+
   cursor: pointer;
   z-index: 50;
   pointer-events: auto;
   transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 
 .mute-button-outside:hover {
   background: #a50a0a; 
@@ -153,11 +154,10 @@
 }
 
 
-/* ===== Фото ===== */
 
 .photo-container {
   position: absolute;
-  inset: 0; /* Occupy full space of tv-wrapper */
+  inset: 0; 
   display: flex;
   justify-content: center;
   align-items: center;
@@ -166,11 +166,11 @@
 
 .photo-frame {
   position: relative;
-  width: 100%; /* Responsive width */
-  max-width: 460px; /* Max width for photo */
-  height: auto; /* Maintain aspect ratio */
-  aspect-ratio: 560 / 640; /* Aspect ratio of Denis.png */
-  overflow: visible;   /* чтобы дымка сверху/сбоку не обрезалась */
+  width: 100%; 
+  max-width: 460px; 
+  height: auto;
+  aspect-ratio: 560 / 640; 
+  overflow: visible;   
   position: relative;
   background-size: cover;
   background-position: center;
@@ -185,24 +185,25 @@
 }
 
 
-/* Фото постепенно исчезает к краям */
+
 
 .photo-frame img {
   position: relative;
-  z-index: 1; /* под canvas */
+  z-index: 1;
   width: 100%;
   height: 100%;
   object-fit: contain;
   object-position: center top;
 
-  mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.2) 75%, rgba(0,0,0,0) 100%);
   -webkit-mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.2) 75%, rgba(0,0,0,0) 100%);
-  mask-repeat: no-repeat;
+  mask-image: radial-gradient(circle at center, rgba(0,0,0,1) 40%, rgba(0,0,0,0.5) 60%, rgba(0,0,0,0.2) 75%, rgba(0,0,0,0) 100%);
   -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
   mask-size: cover;
   -webkit-mask-size: cover;
   mask-position: center;
   -webkit-mask-position: center;
+  mask-position: center;
 }
 
 .smoke-layer {
@@ -214,7 +215,7 @@
   pointer-events: none;
 }
 
-/* Мрачный дым вокруг фото */
+
 .photo-frame::before,
 .photo-frame::after {
   content: "";
@@ -227,15 +228,15 @@
     rgba(10, 10, 10, 0.15) 65%,
     rgba(0, 0, 0, 0) 90%
   );
-  mix-blend-mode: lighten; /* Re-added mix-blend-mode */
+  mix-blend-mode: lighten; 
   pointer-events: none;
   filter: blur(100px);
   opacity: 0.8;
   animation: fogBreath 16s ease-in-out infinite alternate;
-  z-index: 100; /* Increased z-index to be above photo-container's z-index */
+  z-index: 100;
 }
 
-/* Второй слой для эффекта глубины */
+
 .photo-frame::after {
   animation-delay: 6s;
   opacity: 0.6;
@@ -243,7 +244,7 @@
   transform: scale(1.4);
 }
 
-/* Медленное дыхание дымки */
+
 @keyframes fogBreath {
   0% {
     transform: translate(-5%, -8%) scale(1);
@@ -266,16 +267,16 @@
 
 
 
-/* ===== Текст ===== */
+
 .text-block {
-  width: 40vw; /* Adjusted for side-by-side layout */
-  max-width: 500px; /* Max width for text block */
+  width: 40vw; 
+  max-width: 500px;
   text-align: left;
-  /* margin-left: -6rem; Removed to use gap on hero-section */
+  
 }
 
 .text-block h1 {
-  font-size: clamp(2.5rem, 5vw, 3rem); /* Responsive font size */
+  font-size: clamp(2.5rem, 5vw, 3rem); 
   font-weight: 700;
   margin-bottom: 1.5rem;
 }
@@ -295,29 +296,28 @@
 }
 
 .cta-button {
-  background: linear-gradient(to right, #ab1313, #750404); /* светлый → темный красный по горизонтали */
+  background: linear-gradient(to right, #ab1313, #750404); 
   color: white;
   padding: 1rem 2rem;
   border-radius: 0.75rem;
   font-size: 1.125rem;
-  border: 1px solid transparent; /* Изначально прозрачная рамка */
+  border: 1px solid transparent; 
   transition: border 0.3s ease, box-shadow 0.3s ease;
   cursor: pointer;
   
-  /* --- СТИЛИ ДЛЯ ВЫПУКЛОСТИ --- */
+ 
   box-shadow: 
-    inset 2px 2px 4px rgba(255, 255, 255, 0.4), /* Светлая тень внутри */
-    inset -2px -2px 4px rgba(0, 0, 0, 0.6);   /* Темная тень внутри */
+    inset 2px 2px 4px rgba(255, 255, 255, 0.4), 
+    inset -2px -2px 4px rgba(0, 0, 0, 0.6);   
 }
 
 .cta-button:hover {
-  /* УБРАНО: border: 1px solid white; */ 
-  
-  /* --- СТИЛИ НАВЕДЕНИЯ (ТОЛЬКО СВЕЧЕНИЕ) --- */
+ 
+
   box-shadow: 
-    /* Добавляем внешнюю тень для свечения */
+ 
     0 0 16px rgba(255, 255, 255, 0.5), 
-    /* Сохраняем внутренние тени для выпуклости (их нужно повторить) */
+   
     inset 2px 2px 4px rgba(255, 255, 255, 0.4),
     inset -2px -2px 4px rgba(0, 0, 0, 0.6);
   /* -------------------------------------- */
@@ -326,7 +326,7 @@
 
 /* ===== Анимации ===== */
 
-/* Мягкое появление общих элементов */
+
 .animate-fadeInSoft {
   animation: fadeInSoft 1.2s ease forwards;
 }
@@ -342,7 +342,7 @@
   }
 }
 
-/* ===== Кинематографическое появление фото (Depth Reveal) ===== */
+
 @keyframes cinematicFade {
   0% {
     opacity: 0;
@@ -429,10 +429,6 @@
 
 
 
-
-
-
-/* Мягкое дыхание света без смещения */
 .animate-cinematicFade::after {
   content: "";
   position: absolute;
@@ -467,47 +463,34 @@
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-/* ===== Адаптив ===== */
-/* Adjustments for larger screens (e.g., 1440x900, 1280x800) */
 @media (min-width: 1201px) {
   .hero-section {
-    padding-top: 1.5rem; /* Reduce top/bottom space */
+    padding-top: 1.5rem;
     padding-bottom: 1.5rem;
   }
   .tv-container {
-    width: 73%; /* Adjusted width */
-    height: 87%; /* Adjusted height */
-    left: 13.5%; /* Shifted slightly left */
-    top: 6.5%; /* Shifted slightly up */
+    width: 73%; 
+    height: 87%; 
+    left: 13.5%; 
+    top: 6.5%; 
   }
 }
 
 @media (max-width: 1200px) {
   .hero-section {
     gap: 3rem;
-    padding-top: 2rem; /* Ensure consistent padding */
+    padding-top: 2rem;
     padding-bottom: 2rem;
   }
   .tv-wrapper {
-    width: 48vw; /* Slightly wider for better balance */
+    width: 48vw; 
     max-width: 750px;
   }
   .tv-container {
-    width: 73%; /* Adjusted width */
-    height: 87%; /* Adjusted height */
-    left: 13.5%; /* Shifted slightly left */
-    top: 6.5%; /* Shifted slightly up */
+    width: 73%; 
+    height: 87%; 
+    left: 13.5%; 
+    top: 6.5%; 
   }
   .text-block {
     width: 48vw;
@@ -518,12 +501,12 @@
 @media (max-width: 992px) {
   .hero-section {
     flex-direction: column;
-    min-height: auto; /* Allow content to flow */
-    padding: 4rem 1rem; /* More vertical padding */
+    min-height: initial; 
+    padding: 4rem 1rem; 
     gap: 2rem;
   }
   .tv-wrapper {
-    width: 80vw; /* Take more width when stacked */
+    width: 80vw; 
     max-width: 600px;
     aspect-ratio: 16/10;
   }
@@ -538,10 +521,10 @@
     max-width: 400px;
   }
   .text-block {
-    width: 90vw; /* Take more width when stacked */
+    width: 90vw; 
     max-width: 600px;
     text-align: center;
-    margin-left: 0; /* Remove negative margin */
+    margin-left: 0; 
   }
   .text-block h1 {
     font-size: clamp(2rem, 8vw, 2.5rem);
@@ -647,15 +630,16 @@
     width: 100vw;
     max-width: 350px;
   }
-  .text-block h1 {
-    font-size: clamp(1.3rem, 5.5vw, 1.8rem);
+   .text-block h1 {
+    font-size: clamp(1.5rem, 7vw, 2.2rem); 
   }
   .subtitle {
-    font-size: clamp(0.9rem, 2.8vw, 1rem);
+    font-size: clamp(1.1rem, 3.5vw, 1.4rem);
   }
   .desc {
-    font-size: clamp(0.8rem, 2vw, 0.9rem);
+    font-size: clamp(0.9rem, 2.5vw, 1.1rem); 
   }
+}
   .cta-button {
     padding: 0.6rem 1rem;
     font-size: 0.85rem;
@@ -666,7 +650,7 @@
     font-size: 0.8rem;
     padding: 4px 6px;
   }
-}
+
 
 @media (max-width: 300px) {
   .hero-section {
@@ -686,7 +670,7 @@
     max-width: 280px;
   }
   .text-block h1 {
-    font-size: clamp(1.1rem, 5vw, 1.5rem);
+    font-size: clamp(1.5rem, 6vw, 2.5rem);
   }
   .subtitle {
     font-size: clamp(0.8rem, 2.5vw, 0.9rem);
@@ -710,7 +694,7 @@
   opacity: 0;
   transform: scale(1.02);
   filter: blur(6px);
-  animation: photoReveal 4s ease-in-out forwards; /* медленнее и мягче */
+  animation: photoReveal 4s ease-in-out forwards; 
   animation-delay: 0.6s;
 }
 

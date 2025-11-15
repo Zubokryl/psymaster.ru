@@ -2,17 +2,17 @@
   position: relative;
   overflow: hidden;
 
-  /* 🌫 Фон с дымкой */
+
   background-image: url("/assets/decorative-background-with-smoke.jpg");
-  background-size: cover;         /* растягиваем на весь блок */
-  background-position: center;    /* центрирование */
+  background-size: cover;   
+  background-position: center; 
   background-repeat: no-repeat;
-  background-attachment: fixed;   /* скролл фона */
+  background-attachment: fixed;  
 }
 
-/* Прозрачность блоков, чтобы фон просвечивал */
+/* Прозрачность блоков*/
 .bg-dark-glass {
-  background-color: rgba(0,0,0,0.3); /* можно регулировать затемнение */
+  background-color: rgba(0,0,0,0.3);
 }
 .bg-dark-glass-strong {
   background-color: rgba(0,0,0,0.5);
@@ -67,7 +67,7 @@
   transform: scale(1.02);
 }
 
-/* 💻 Large screens (1440px+) */
+
 @media (min-width: 1440px) {
   .help-title {
     font-size: clamp(2.5rem, 2.5vw, 3.5rem);
@@ -77,7 +77,6 @@
   }
 }
 
-/* 📉 ≤1200px */
 @media (max-width: 1200px) {
   .help-title {
     font-size: clamp(2.2rem, 3vw, 3rem);
@@ -87,7 +86,7 @@
   }
 }
 
-/* 🧱 ≤992px (планшеты) */
+
 @media (max-width: 992px) {
   .help-title {
     font-size: clamp(2rem, 4vw, 2.6rem);
@@ -100,7 +99,7 @@
   }
 }
 
-/* 📱 ≤768px (смартфоны) */
+
 @media (max-width: 768px) {
   .help-title {
     font-size: clamp(1.8rem, 5vw, 2.2rem);
@@ -116,7 +115,7 @@
   }
 }
 
-/* 📲 ≤576px (малые экраны) */
+
 @media (max-width: 576px) {
   .help-title {
     font-size: clamp(1.6rem, 5vw, 2rem);
@@ -129,7 +128,7 @@
   }
 }
 
-/* 🪶 ≤400px */
+
 @media (max-width: 400px) {
   .help-title {
     font-size: clamp(1.3rem, 4.5vw, 1.7rem);
@@ -142,7 +141,7 @@
   }
 }
 
-/* 🧩 ≤300px — ультра-компакт */
+
 @media (max-width: 300px) {
   .help-title {
     font-size: clamp(1.1rem, 4vw, 1.4rem);

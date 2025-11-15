@@ -125,7 +125,8 @@ export default function Reviews({ reviews }: ReviewsProps) {
   }, []);
 
   return (
-    <section className="py-24 bg-[#0b0b0b] min-h-screen text-white">
+    <section className="py-24 min-h-screen text-white bg-[url('/assets/leaves.jpg')] bg-cover bg-center bg-no-repeat">
+
       <div className="container mx-auto px-4">
         <h2 className="text-4xl md:text-5xl font-bold text-center mb-8">
           <span className="text-accent">О</span>тзывы
@@ -176,7 +177,7 @@ export default function Reviews({ reviews }: ReviewsProps) {
                   <p className="mb-2 text-gray-400 text-sm">{review.date}</p>
                   <p className="text-gray-300 line-clamp-4">{review.text}</p>
                 </div>
-                {/* Кнопка удаления — только для админа */}
+               
                 {isAdmin && (
                   <button
                     onClick={(e) => {
@@ -248,6 +249,7 @@ export default function Reviews({ reviews }: ReviewsProps) {
               <button
                 onClick={() => setSelectedReview(null)}
                 className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                title="Close review"
               >
                 <X size={24} />
               </button>
@@ -278,6 +280,7 @@ export default function Reviews({ reviews }: ReviewsProps) {
               <button
                 onClick={() => setShowNewReviewModal(false)}
                 className="absolute top-4 right-4 text-gray-400 hover:text-white"
+                title="Закрыть модальное окно"
               >
                 <X size={24} />
               </button>

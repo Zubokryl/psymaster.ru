@@ -105,6 +105,7 @@ const isAdmin = user?.user_metadata?.role === "admin";
     );
 
     videoRefs.forEach((_v, el) => observer.observe(el));
+    
     return () => videoRefs.forEach((_v, el) => observer.unobserve(el));
   }, []);
 
@@ -112,7 +113,10 @@ const isAdmin = user?.user_metadata?.role === "admin";
   if (!articles.length) return <p className="text-center text-gray-400 py-24 animate-pulse">Загрузка статей...</p>;
 
  return (
-  <section className="py-24 bg-[#0b0b0b] min-h-screen text-white">
+  <section 
+  className="py-24 min-h-screen text-white bg-cover bg-center bg-no-repeat articles-background"
+>
+
     <div className="container mx-auto px-4">
       
 
@@ -199,14 +203,7 @@ const isAdmin = user?.user_metadata?.role === "admin";
               {/* Текст превью */}
               <div className="flex-1 overflow-hidden">
                 <div
-                  className="text-gray-300 prose prose-invert prose-sm max-w-none"
-                  style={{
-                    display: "-webkit-box",
-                    WebkitBoxOrient: "vertical",
-                    WebkitLineClamp: 45,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                  }}
+                  className="text-gray-300 prose prose-invert prose-sm max-w-none articleContent"
                   dangerouslySetInnerHTML={{ __html: article.content }}
                 />
               </div>
@@ -312,6 +309,7 @@ const isAdmin = user?.user_metadata?.role === "admin";
             <button
               onClick={() => setSelectedArticle(null)}
               className="absolute top-4 right-4 text-gray-400 hover:text-white"
+              title="Close"
             >
               <X size={24} />
             </button>
