@@ -11,23 +11,25 @@ export default function AdminLogin() {
   const router = useRouter();
 
   const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      setError(error.message);
-      return;
-    }
+  e.preventDefault();
+  setError("");
 
-    const { data: { user } } = await supabase.auth.getUser();
+  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error) {
+    setError(error.message);
+    return;
+  }
 
-    if (user?.user_metadata?.role === "admin") {
-      router.push("/admin/articles"); // редирект админа в админку
-    } else {
-      setError("У вас нет прав администратора");
-      await supabase.auth.signOut();
-    }
-  };
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (user?.user_metadata?.role !== "admin") {
+    setError("У вас нет прав администратора");
+    await supabase.auth.signOut();
+    return;
+  }
+
+  router.push("/admin");
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">

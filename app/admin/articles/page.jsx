@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
+import { supabase } from "@/app/lib/supabaseClient";
+
 
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
@@ -24,11 +26,15 @@ export default function AdminArticleEditor() {
 
   // Проверка админа
   useEffect(() => {
-    const loggedIn = localStorage.getItem("adminLoggedIn") === "true";
-    if (!loggedIn) {
+  const checkAdmin = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user?.user_metadata?.role !== "admin") {
       router.push("/admin/login");
     }
-  }, [router]);
+  };
+
+  checkAdmin();
+}, []);
 
   // При наличии id — подгружаем статью
   useEffect(() => {
