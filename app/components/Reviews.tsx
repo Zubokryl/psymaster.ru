@@ -5,25 +5,9 @@ import { User } from "@supabase/supabase-js";
 import { motion, AnimatePresence } from "framer-motion";
 import { X, ArrowUp } from "lucide-react";
 import { supabase } from "@/app/lib/supabaseClient";
+import type { ReviewsProps, Review } from "../types";
 
 
-type Review = {
-  id: number;
-  name: string;
-  date: string;
-  text: string;
-  avatar?: string;
-  screenshot?: string;
-};
-
-type ReviewsProps = {
-  reviews: Review[];
-};
-
-interface DeleteResponse {
-  success: boolean;
-  error?: string;
-}
 
 export default function Reviews({ reviews }: ReviewsProps) {
   const itemsPerPage = 6;

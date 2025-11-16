@@ -46,20 +46,10 @@ export async function POST(req) {
 export async function DELETE(req) {
   const { id } = await req.json();
 
-  // Для Supabase Auth: получаем user id из сессии (через куку/tokent)
-  // req.headers.authorization или даже напрямую через supabase.session()
-  // Ни в коем случае не email/password клиента или из env!
-
-  // Check user is admin by session
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) {
     return new Response(JSON.stringify({ error: "Нет доступа" }), { status: 401 });
   }
-
-  // Здесь можно доп. запросом проверить, что user — админ, если есть таблица users/is_admin
-  // Например:
-  // const { data, error } = await supabase.from("users").select("is_admin").eq("id", user.id).single();
-  // if (!data?.is_admin) return new Response(JSON.stringify({ error: "Нет прав" }), { status: 403 });
 
   if (!id) {
     return new Response(JSON.stringify({ error: "Не указан ID отзыва" }), { status: 400 });

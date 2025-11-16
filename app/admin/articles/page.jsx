@@ -9,6 +9,7 @@ import "react-quill/dist/quill.snow.css";
 import { supabase } from "@/app/lib/supabaseClient";
 
 
+
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 export default function AdminArticleEditor() {

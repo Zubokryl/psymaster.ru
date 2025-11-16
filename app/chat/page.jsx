@@ -110,7 +110,7 @@ export default function ChatPage() {
     >
       <div className="mx-auto px-4 py-6 max-w-3xl">
 
-        {/* Контейнер чата прозрачный */}
+     
         <div
           className="rounded-lg border border-gray-800 overflow-hidden flex flex-col h-[calc(100vh-100px)]"
           style={{ backgroundColor: "rgba(0,0,0,0)" }}

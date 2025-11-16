@@ -13,7 +13,7 @@ export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
 
-  // ---------- РЕАКТИВНАЯ АВТОРИЗАЦИЯ ----------
+
   useEffect(() => {
     const loadUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -33,14 +33,14 @@ export default function Header() {
 
   const isAdmin = user?.user_metadata?.role === "admin";
 
-  // ---------- ВЫХОД ----------
+
   const logout = async () => {
     await supabase.auth.signOut();
     router.push("/");
     router.refresh();
   };
 
-  // ---------- Ссылки ----------
+
   const links = [
     { name: "Главная", href: "/" },
     { name: "Мои статьи", href: "/articles" },

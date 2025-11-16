@@ -1,3 +1,4 @@
+// app/components/Hero.jsx
 "use client";
 import { useState, useRef, useEffect } from "react";
 import "./hero.css";
