@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
@@ -11,6 +12,7 @@ import { supabase } from "@/app/lib/supabaseClient";
 const ReactQuill = dynamic(() => import("react-quill"), { ssr: false });
 
 export default function AdminArticleEditor() {
+  const [user, setUser] = useState(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const articleId = searchParams ? searchParams.get("id") : null;
@@ -24,17 +26,27 @@ export default function AdminArticleEditor() {
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  // Проверка админа
   useEffect(() => {
-  const checkAdmin = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user?.user_metadata?.role !== "admin") {
+  const loadUser = async () => {
+    const { data } = await supabase.auth.getUser();
+    setUser(data.user);
+
+    // Если пользователь не найден — на логин
+    if (!data.user) {
+      router.push("/admin/login");
+      return;
+    }
+
+    // Если роль не админ — на логин
+    if (data.user.user_metadata?.role !== "admin") {
       router.push("/admin/login");
     }
   };
 
-  checkAdmin();
-}, []);
+  loadUser();
+}, [router]);
+
+
 
   // При наличии id — подгружаем статью
   useEffect(() => {
@@ -81,48 +93,58 @@ export default function AdminArticleEditor() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    // защита: только админ может отправлять
-    if (localStorage.getItem("adminLoggedIn") !== "true") {
-      alert("Доступ только для админа.");
-      router.push("/admin/login");
-      return;
+  // --- Нормальная проверка прав администратора ---
+  if (user?.user_metadata?.role !== "admin") {
+    alert("Доступ только для администратора");
+    router.push("/admin/login");
+    return;
+  }
+
+  // --- Валидация полей ---
+  if (!form.title || !form.content) {
+    alert("Пожалуйста, заполните заголовок и контент.");
+    return;
+  }
+
+  setSaving(true);
+
+  try {
+    const method = articleId ? "PUT" : "POST";
+    const body = articleId ? { id: articleId, ...form } : form;
+
+    const res = await fetch("/api/articles", {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    const result = await res.json();
+
+    if (result?.error) {
+      console.error("API error:", result.error);
+      alert("Ошибка от API: " + result.error);
+    } else {
+      alert(articleId ? "Статья обновлена!" : "Статья добавлена!");
+      router.push("/articles"); 
     }
+  } catch (err) {
+    console.error("Ошибка сохранения:", err);
+    alert("Ошибка при сохранении статьи.");
+  } finally {
+    setSaving(false);
+  }
+};
 
-    if (!form.title || !form.content) {
-      alert("Пожалуйста, заполните заголовок и контент.");
-      return;
-    }
+if (user === null) {
+  return (
+    <div className="min-h-screen flex items-center justify-center text-white text-xl">
+      Проверяем права администратора…
+    </div>
+  );
+}
 
-    setSaving(true);
-    try {
-      const method = articleId ? "PUT" : "POST";
-      // если есть articleId — приводим к числу, если нужно
-      const body = articleId ? { id: articleId, ...form } : form;
-
-      const res = await fetch("/api/articles", {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      const result = await res.json();
-      if (result?.error) {
-        console.error("API error:", result.error);
-        alert("Ошибка от API: " + result.error);
-      } else {
-        alert(articleId ? "Статья обновлена!" : "Статья добавлена!");
-        // после сохранения — редирект на страницу со списком статей (или на /admin)
-        router.push("/articles"); // показываем пользователям список статей
-      }
-    } catch (err) {
-      console.error("Ошибка сохранения:", err);
-      alert("Ошибка при сохранении статьи.");
-    } finally {
-      setSaving(false);
-    }
-  };
 
   return (
     <div className="min-h-screen pt-28 pb-20 px-6 bg-[url('/assets/decorative-background-with-smoke.jpg')] bg-cover bg-fixed bg-center text-white font-sans">
