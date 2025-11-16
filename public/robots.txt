@@ -1,27 +1,12 @@
 # robots.txt для psymaster.ru
 
-# Общие правила для всех поисковых роботов
 User-agent: *
-Disallow: /admin/       # Админка запрещена
-Disallow: /api/         # API запрещен
-Crawl-delay: 10         # Минимальная пауза между запросами к серверу (секунды)
-
-# Разрешаем индексацию всех остальных страниц
+Disallow: /admin/
+Disallow: /api/
 Allow: /
 
-# Специфические правила для разделов
-# Статьи — высокий приоритет для индексации
-Allow: /articles/
-# Рекомендуется частая проверка новых статей
-# Здесь priority указывается в sitemap.xml, robots.txt только разрешает
+# Указываем Яндексу основной хост
+Host: psymaster.ru
 
-# Отзывы — средний приоритет
-Allow: /reviews/
-# Можно указать, что сканировать реже
-
-# Чат — низкий приоритет, индексировать необязательно, но разрешаем
-Allow: /chat/
-
-# Указание на карту сайта для улучшенной индексации
-Sitemap: https://psymaster-ru.vercel.app/sitemap.xml
-
+# Ссылка на sitemap
+Sitemap: https://psymaster.ru/sitemap.xml
